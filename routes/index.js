@@ -22,7 +22,7 @@ router.get('/userlist', function(req, res) {
     });
   });
 
-  connection.end();
+  
 });
 
 /* POST to Add User Service */
