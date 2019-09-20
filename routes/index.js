@@ -13,14 +13,10 @@ router.get('/helloworld', function(req, res) {
 
 /* GET Userlist page. */
 router.get('/userlist', function(req, res) {
-  var db = req.db;
-  
-  var connection = db.connect(function(err) {
-    if (err) throw err;
-    console.log("Connected!");
-  });
+  var connection = req.db;
   
   connection.query('SELECT * FROM usercollection', function(err, rows, fields) {
+    if (err) throw err;
     res.render('userlist', {
         "userlist" : rows,
     });
