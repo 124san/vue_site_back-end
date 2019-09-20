@@ -9,7 +9,7 @@
     <ul>
       <%
         var list = '';
-        for (i = 0; i <= userlist.length; i++) {
+        for (i = 0; i < userlist.length; i++) {
           list += '<li><a href="mailto:' + userlist[i].email + '">' + userlist[i].username + '</a></li>';
         }
       %>
