@@ -14,15 +14,11 @@ router.get('/helloworld', function(req, res) {
 /* GET Userlist page. */
 router.get('/userlist', function(req, res) {
   var connection = req.db;
-  
   connection.query('SELECT * FROM usercollection', function(err, rows, fields) {
-    if (err) throw err;
-    res.render('userlist', {
-        "userlist" : rows,
-    });
+      res.render('userlist', {
+          "userlist" : rows,
+      });
   });
-
-  
 });
 
 /* POST to Add User Service */
