@@ -36,30 +36,32 @@ router.post('/adduser', function(req, res) {
   var userName = req.body.username;
   var userEmail = req.body.useremail;
   var password = req.body.password;
-  let hashedPW = '';
+
+  // hash pw
   bcrypt.hash(password, saltRounds, (err, hashed) => {
     if (err) {
       throw err;
     }
-    console.log(hashed)
-    hashedPW = hashed;
+    
+    var newUser = { username: userName, email: userEmail, password: hashed}
+
+    // Submit to the DB
+    connection.query('INSERT INTO usercollection SET ?', newUser, function (error, results, fields) {
+        if (error) {
+            // If it failed, return error
+            res.send("There was a problem adding the information to the database.");
+        }
+        else {
+            // If it worked, set the header so the address bar doesn't still say /adduser
+            //res.location("userlist");
+            // And forward to success page
+            res.redirect("userlist");
+        }
+    });
+
   })
   // We're not populating ID here because it should be auto-incrementing
-  var newUser = { username: userName, email: userEmail, password: hashedPW}
-
-  // Submit to the DB
-  connection.query('INSERT INTO usercollection SET ?', newUser, function (error, results, fields) {
-      if (error) {
-          // If it failed, return error
-          res.send("There was a problem adding the information to the database.");
-      }
-      else {
-          // If it worked, set the header so the address bar doesn't still say /adduser
-          //res.location("userlist");
-          // And forward to success page
-          res.redirect("userlist");
-      }
-  });
+  
 });
 
 module.exports = router;
