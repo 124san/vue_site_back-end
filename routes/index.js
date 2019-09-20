@@ -19,9 +19,10 @@ router.get('/helloworld', function(req, res) {
 router.get('/userlist', function(req, res) {
   var connection = req.db;
   connection.query('SELECT * FROM usercollection', function(err, rows, fields) {
-      res.render('userlist', {
-          "userlist" : rows,
-      });
+    console.log('connected to mysql!')
+    res.render('userlist', {
+        "userlist" : rows,
+    });
   });
 });
 
