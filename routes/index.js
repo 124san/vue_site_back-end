@@ -41,10 +41,9 @@ router.post('/adduser', function(req, res) {
     if (err) {
       throw err;
     }
+    console.log(hashed)
     hashedPW = hashed;
   })
-  console.log(password);
-  console.log(hashedPW);
   // We're not populating ID here because it should be auto-incrementing
   var newUser = { username: userName, email: userEmail, password: hashedPW}
 
@@ -58,8 +57,6 @@ router.post('/adduser', function(req, res) {
           // If it worked, set the header so the address bar doesn't still say /adduser
           //res.location("userlist");
           // And forward to success page
-          console.log(password);
-  console.log(hashedPW);
           res.redirect("userlist");
       }
   });
