@@ -25,6 +25,8 @@ router.get('/userlist', function(req, res) {
         "userlist" : rows,
     });
   });
+
+  connection.end();
 });
 
 /* POST to Add User Service */
