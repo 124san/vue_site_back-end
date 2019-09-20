@@ -19,7 +19,7 @@ router.get('/helloworld', function(req, res) {
 router.get('/userlist', function(req, res) {
   var connection = req.db;
   connection.query('SELECT * FROM usercollection', function(err, rows, fields) {
-    console.log(rows)
+    if (err) throw err;
     res.render('userlist', {
         "userlist" : rows,
     });
