@@ -9,13 +9,23 @@ var usersRouter = require('./routes/users');
 
 const appConfig = require('./config.js');
 
+// MySQL db
+/*
 const mysql = require('mysql')
 var db = mysql.createConnection({
   host     : 'localhost',
   user     : appConfig.sqluser,
   password : appConfig.sqlpw,
   database : 'my_node'
-});
+});*/
+
+// Monk
+// var db = require('monk')('mongodb+srv://'+appConfig.mongouser+':'+appConfig.mongopw+'@cluster0-4rswz.gcp.mongodb.net/test?retryWrites=true&w=majority');
+
+// MongoDB Atlus
+const MongoClient = require('mongodb').MongoClient;
+const uri = 'mongodb+srv://'+appConfig.mongouser+':'+appConfig.mongopw+'@cluster0-4rswz.gcp.mongodb.net/test?retryWrites=true&w=majority';
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 
 var app = express();
@@ -32,7 +42,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Make our db accessible to our router
 app.use(function(req,res,next){
-  req.db = db;
+  // req.db = db;
+  req.client = client;
   next();
 });
 

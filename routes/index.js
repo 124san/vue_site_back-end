@@ -15,7 +15,7 @@ router.get('/helloworld', function(req, res) {
   res.render('helloworld', { title: 'Im gonna say the n word!' });
 });
 
-/* GET Userlist page. */
+/* GET Userlist page sql.
 router.get('/userlist', function(req, res) {
   var connection = req.db;
   connection.query('SELECT * FROM usercollection', function(err, rows, fields) {
@@ -24,13 +24,34 @@ router.get('/userlist', function(req, res) {
         "userlist" : rows,
     });
   });
+});*/
+
+/* GET Userlist page. */
+router.get('/userlist', function(req, res) {
+  var client = req.client;
+
+  // connect to usercollection
+  client.connect(err => {
+    if (err) throw err;
+    const collection = client.db("mynode").collection("usercollection");
+    
+    collection.find({}).toArray(function(e,docs){
+      if (e) throw e;
+      res.render('userlist', {
+          "userlist" : docs
+      });
+    });
+    client.close();
+  });
 });
+
+
 
 /* POST to Add User Service */
 router.post('/adduser', function(req, res) {
 
-  // Set our internal DB variable
-  var connection = req.db;
+  // Set our internal client variable
+  var client = req.client;
 
   // Get our form values. These rely on the "name" attributes
   var userName = req.body.username;
@@ -45,23 +66,19 @@ router.post('/adduser', function(req, res) {
     
     var newUser = { username: userName, email: userEmail, password: hashed}
 
-    // Submit to the DB
-    connection.query('INSERT INTO usercollection SET ?', newUser, function (error, results, fields) {
-        if (error) {
-            // If it failed, return error
-            res.send("There was a problem adding the information to the database.");
-        }
-        else {
-            // If it worked, set the header so the address bar doesn't still say /adduser
-            //res.location("userlist");
-            // And forward to success page
-            res.redirect("userlist");
-        }
+    // connect to MongoDB
+    client.connect(err => {
+      if (err) throw err;
+      const collection = client.db("mynode").collection("usercollection");
+      
+      collection.insert(newUser, function(e,docs){
+        if (e) throw e;
+        res.redirect("userlist");
+      });
+      client.close();
     });
-
+    
   })
-  // We're not populating ID here because it should be auto-incrementing
-  
 });
 
 module.exports = router;
