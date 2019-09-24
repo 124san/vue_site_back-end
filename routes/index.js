@@ -15,17 +15,6 @@ router.get('/helloworld', function(req, res) {
   res.render('helloworld', { title: 'Im gonna say the n word!' });
 });
 
-/* GET Userlist page sql.
-router.get('/userlist', function(req, res) {
-  var connection = req.db;
-  connection.query('SELECT * FROM usercollection', function(err, rows, fields) {
-    if (err) throw err;
-    res.render('userlist', {
-        "userlist" : rows,
-    });
-  });
-});*/
-
 /* GET Userlist page. */
 router.get('/userlist', function(req, res) {
   var client = req.client;
@@ -77,8 +66,49 @@ router.post('/adduser', function(req, res) {
       });
       client.close();
     });
-    
+
   })
+});
+
+/* POST to login */
+router.post('/login', function(req, res) {
+
+  // Set our internal client variable
+  var client = req.client;
+
+  // Get our form values. These rely on the "name" attributes
+  var loginUser = req.body.username;
+  var loginPW = req.body.password;
+
+  // connect to MongoDB
+  client.connect(err => {
+    if (err) throw err;
+    const collection = client.db("mynode").collection("usercollection");
+    
+    // Find user with given credentials
+    collection.findOne({username: loginUser}).then(result => {
+      // if there is such user
+      if (result) {
+        bcrypt.compare(loginPW, result.password, (err, isCorrect) => {
+          if (err) {
+            res.status(500).send('error comparing pw');
+          }
+          // if password is correct
+          if (isCorrect) {
+            res.send(result)
+          } else {
+            res.status(403).send('nope, wrong pw')
+          }
+        })
+      } else {
+        res.status(403).send("Oof no such user")
+      }
+    }).catch(err => {
+      res.status(500).send('error finding user')
+    })
+    client.close();
+  });
+
 });
 
 module.exports = router;
