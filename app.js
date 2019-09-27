@@ -56,7 +56,7 @@ app.use(function(req,res,next){
   if (!req.body.mykey) {
     res.status(403).send('unauthorized http request.')
   }
-  else bcrypt.compare(req.body.mykey, process.env.HTTPKEY, (err, result) => {
+  else bcrypt.compare(process.env.HTTPKEY, req.body.mykey, (err, result) => {
     if (err) {
       res.status(500).send('error checking http sender');
     }
