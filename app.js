@@ -57,7 +57,7 @@ app.use(function(req,res,next){
     if (err) {
       res.status(500).send('error checking http sender');
     }
-    if (!result) {
+    else if (!result) {
       res.status(403).send('unauthorized http request')
     }
     else {
