@@ -18,7 +18,7 @@ function verify_post(req,res,next){
       next();
     }
   })
-});
+}
 
 // ---------------------- router functions ----------------------- //
 
