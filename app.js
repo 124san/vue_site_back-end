@@ -7,9 +7,6 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
-const bcrypt = require('bcrypt');
-// const saltRounds = 10;
-
 // For local only
 // const appConfig = require('./config.js');
 
@@ -56,17 +53,12 @@ app.use(function(req,res,next){
   if (!req.body.mykey) {
     res.status(403).send('unauthorized http request.')
   }
-  else bcrypt.compare(process.env.HTTPKEY, req.body.mykey, (err, result) => {
-    if (err) {
-      res.status(500).send('error checking http sender');
-    }
-    else if (!result) {
-      res.status(403).send('unauthorized http request')
-    }
-    else {
-      next();
-    }
-  })
+  if (req.body.mykey !== process.env.HTTPKEY) {
+    res.status(403).send('unauthorized http request')
+  }
+  else {
+    next();
+  }
 })
 
 // Routers
