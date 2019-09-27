@@ -5,21 +5,6 @@ var router = express.Router();
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
-// Verify POST requests
-function verify_post(req,res,next){
-  bcrypt.compare(req.body.mykey, process.env.HTTPKEY, (err, result) => {
-    if (err) {
-      res.status(500).send('error checking http sender');
-    }
-    else if (!result) {
-      res.status(403).send('unauthorized http request')
-    }
-    else {
-      next();
-    }
-  })
-}
-
 // ---------------------- router functions ----------------------- //
 
 /* GET home page. */
@@ -54,7 +39,7 @@ router.get('/userlist', function(req, res) {
 
 
 /* POST to Add User Service */
-router.post('/adduser', verify_post, function(req, res) {
+router.post('/adduser', function(req, res) {
 
   // Set our internal client variable
   var client = req.client;
@@ -88,7 +73,7 @@ router.post('/adduser', verify_post, function(req, res) {
 });
 
 /* POST to login */
-router.post('/login', verify_post, function(req, res) {
+router.post('/login', function(req, res) {
 
   // Set our internal client variable
   var client = req.client;
