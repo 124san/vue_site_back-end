@@ -5,6 +5,8 @@ var router = express.Router();
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
+// ---------------------- router functions ----------------------- //
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
