@@ -49,8 +49,12 @@ router.post('/adduser', function(req, res) {
   var userEmail = req.body.useremail;
   var password = req.body.password;
 
+  if (!userName || !userEmail || !password) {
+    res.status(400).send('Bad request adding user');
+  }
+
   // hash pw
-  bcrypt.hash(password, saltRounds, (err, hashed) => {
+  else bcrypt.hash(password, saltRounds, (err, hashed) => {
     if (err) {
       throw err;
     }
@@ -64,7 +68,7 @@ router.post('/adduser', function(req, res) {
       
       collection.insert(newUser, function(e,docs){
         if (e) throw e;
-        res.redirect("userlist");
+        res.send(newUser);
       });
       client.close();
     });
