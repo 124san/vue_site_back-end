@@ -53,11 +53,11 @@ app.use(function(req,res,next){
 
 // Verify
 app.use(function(req,res,next){
-  bcrypt.compare(req.body.mykey, process.env.HTTPKEY, (err, res) => {
+  bcrypt.compare(req.body.mykey, process.env.HTTPKEY, (err, result) => {
     if (err) {
       res.status(500).send('error checking http sender');
     }
-    if (!res) {
+    if (!result) {
       res.status(403).send('unauthorized http request')
     }
     else {
