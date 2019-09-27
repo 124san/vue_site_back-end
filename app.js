@@ -7,7 +7,8 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
-const appConfig = require('./config.js');
+// For local only
+// const appConfig = require('./config.js');
 
 // MySQL db
 /*
@@ -24,7 +25,7 @@ var db = mysql.createConnection({
 
 // MongoDB Atlus
 const MongoClient = require('mongodb').MongoClient;
-const uri = 'mongodb+srv://'+appConfig.mongouser+':'+appConfig.mongopw+'@cluster0-4rswz.gcp.mongodb.net/test?retryWrites=true&w=majority';
+const uri = 'mongodb+srv://'+process.env.MONGO_USER+':'+process.env.MONGO_PW+'@cluster0-4rswz.gcp.mongodb.net/test?retryWrites=true&w=majority';
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 
