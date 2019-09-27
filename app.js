@@ -54,9 +54,9 @@ app.use(function(req,res,next){
 // Verify POST requests
 app.use(function(req,res,next){
   if (!req.body.mykey) {
-    res.status(403).send('unauthorized http request                                           `')
+    res.status(403).send('unauthorized http request.')
   }
-  bcrypt.compare(req.body.mykey, 'process.env.HTTPKEY', (err, result) => {
+  else bcrypt.compare(req.body.mykey, process.env.HTTPKEY, (err, result) => {
     if (err) {
       res.status(500).send('error checking http sender');
     }
