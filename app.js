@@ -7,22 +7,6 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
-// For local only
-// const appConfig = require('./config.js');
-
-// MySQL db
-/*
-const mysql = require('mysql')
-var db = mysql.createConnection({
-  host     : 'localhost',
-  user     : appConfig.sqluser,
-  password : appConfig.sqlpw,
-  database : 'my_node'
-});*/
-
-// Monk
-// var db = require('monk')('mongodb+srv://'+appConfig.mongouser+':'+appConfig.mongopw+'@cluster0-4rswz.gcp.mongodb.net/test?retryWrites=true&w=majority');
-
 // MongoDB Atlus
 const MongoClient = require('mongodb').MongoClient;
 const uri = 'mongodb+srv://'+process.env.MONGO_USER+':'+process.env.MONGO_PW+'@cluster0-4rswz.gcp.mongodb.net/test?retryWrites=true&w=majority';
@@ -49,17 +33,17 @@ app.use(function(req,res,next){
 });
 
 // Verify POST requests
-app.use(function(req,res,next){
-  if (!req.body.mykey) {
-    res.status(403).send('unauthorized http request.')
-  }
-  if (req.body.mykey !== process.env.HTTPKEY) {
-    res.status(403).send('unauthorized http request')
-  }
-  else {
-    next();
-  }
-})
+// app.use(function(req,res,next){
+//   if (!req.body.mykey) {
+//     res.status(403).send('unauthorized http request.')
+//   }
+//   if (req.body.mykey !== process.env.HTTPKEY) {
+//     res.status(403).send('unauthorized http request')
+//   }
+//   else {
+//     next();
+//   }
+// })
 
 // Routers
 app.use('/', indexRouter);
