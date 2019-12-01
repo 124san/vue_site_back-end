@@ -54,11 +54,9 @@ passport.deserializeUser((id, done) => {
 })
 
 app.use(bodyParser.json())
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  next();
-});
-app.use(cors({
+
+// ---------- Cors --------
+const corsOption = {
   origin: function(origin, callback){
     // allow requests with no origin 
     // (like mobile apps or curl requests)
@@ -70,8 +68,8 @@ app.use(cors({
     }
     return callback(null, true);
   }
-}));
-
+}
+app.options('*', cors(corsOption))
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
