@@ -19,6 +19,24 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+// ---------- Cors --------
+const corsOption = {
+  origin: function(origin, callback){
+    // allow requests with no origin 
+    // (like mobile apps or curl requests)
+    if(!origin) return callback(null, true);
+    if(allowedOrigins.indexOf(origin) === -1){
+      var msg = 'The CORS policy for this site does not ' +
+                'allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  }
+}
+app.options('*', cors(corsOption))
+app.use('*', cors(corsOption))
+
 app.use(cookieSession({
   name: 'mysession',
   keys: [process.env.SESSION_KEY || 'akey'],
@@ -54,22 +72,6 @@ passport.deserializeUser((id, done) => {
 })
 
 app.use(bodyParser.json())
-
-// ---------- Cors --------
-const corsOption = {
-  origin: function(origin, callback){
-    // allow requests with no origin 
-    // (like mobile apps or curl requests)
-    if(!origin) return callback(null, true);
-    if(allowedOrigins.indexOf(origin) === -1){
-      var msg = 'The CORS policy for this site does not ' +
-                'allow access from the specified Origin.';
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  }
-}
-app.options('*', cors(corsOption))
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
