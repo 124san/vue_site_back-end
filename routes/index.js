@@ -32,8 +32,8 @@ router.get('/userlist', function(req, res) {
   })
 });
 
-/* POST to Add User Service */
-router.post('/adduser', function(req, res) {
+/* POST to register */
+router.post('/register', function(req, res) {
 
   // Get our form values. These rely on the "name" attributes
   User.findOne({email: req.body.email}, (err, user) => {
@@ -44,7 +44,9 @@ router.post('/adduser', function(req, res) {
     var newUser = new User(req.body)
     newUser.save(err => {
       if (err) throw err
-      return res.send(newUser)
+      passport.authenticate('local')(req, res, function () {
+        res.send("registered")
+      });
     })
   })
 });
@@ -69,8 +71,10 @@ router.get('/logout', (req, res) => {
 })
 // GET to check user
 router.get('/user', authMiddleware,(req, res) => {
-  req.logout();
-  return res.send();
+  User.findById(req.session.passport.user, (err, user) => {
+    if (err) throw err
+    return res.send(user)
+  })
 })
 
 module.exports = router;
