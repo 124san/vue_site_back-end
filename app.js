@@ -35,7 +35,7 @@ const corsOption = {
   }
 }
 app.options('*', cors(corsOption))
-app.use('*', cors(corsOption))
+app.use(cors(corsOption))
 
 app.use(cookieSession({
   name: 'mysession',
