@@ -19,7 +19,11 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-
+app.use(cookieSession({
+  name: 'mysession',
+  keys: [process.env.SESSION_KEY || 'akey'],
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
 // ---------------------- Passport ---------------------
 app.use(passport.initialize());
 app.use(passport.session());
@@ -50,11 +54,6 @@ passport.deserializeUser((id, done) => {
 })
 
 app.use(bodyParser.json())
-app.use(cookieSession({
-    name: 'mysession',
-    keys: [process.env.SESSION_KEY || 'akey'],
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
-}))
 app.use(cors({
   origin: function(origin, callback){
     // allow requests with no origin 
