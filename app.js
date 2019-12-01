@@ -25,7 +25,7 @@ app.use(cors({origin: 'https://sz124san.herokuapp.com'}))
 app.use(cookieSession({
   name: 'mysession',
   keys: [process.env.SESSION_KEY || 'akey'],
-  secure: true,
+  httpOnly: true,
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }))
 // ---------------------- Passport ---------------------
