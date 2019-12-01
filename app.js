@@ -1,26 +1,55 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
+const bodyParser = require('body-parser')
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors')
+const cookieSession = require('cookie-session')
+const passport = require('passport')
+const LocalStrategy = require('passport-local').Strategy
+const User = require("./models/user")
+
 var allowedOrigins = ['http://localhost:8080', 'https://sz124san.herokuapp.com/']
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
-// MongoDB Atlus
-const MongoClient = require('mongodb').MongoClient;
-const uri = 'mongodb+srv://'+process.env.MONGO_USER+':'+process.env.MONGO_PW+'@cluster0-4rswz.gcp.mongodb.net/test?retryWrites=true&w=majority';
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-
-
 var app = express();
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+// ---------------------- Passport ---------------------
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    User.findOne({username: username}, (err, user) => {
+      if (err) { return done(err); }
+      if (!user) { return done(null, false); }
+      if (!user.verifyPassword(password)) { return done(null, false); }
+      return done(null, user);
+    })
+  }
+))
+
+passport.serializeUser((user, done) => {
+  done(null, user.id)
+})
+
+passport.deserializeUser((id, done) => {
+  User.findById(id, (err, user) => {
+    done(err, user)
+  })
+})
+
+app.use(bodyParser.json())
+app.use(cookieSession({
+    name: 'mysession',
+    keys: [process.env.SESSION_KEY || 'akey'],
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
 app.use(cors({
   origin: function(origin, callback){
     // allow requests with no origin 
@@ -34,31 +63,15 @@ app.use(cors({
     return callback(null, true);
   }
 }));
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Make our db accessible to our router
-app.use(function(req,res,next){
-  // req.db = db;
-  req.client = client;
-  next();
-});
-
-// Verify POST requests
-// app.use(function(req,res,next){
-//   if (!req.body.mykey) {
-//     res.status(403).send('unauthorized http request.')
-//   }
-//   if (req.body.mykey !== process.env.HTTPKEY) {
-//     res.status(403).send('unauthorized http request')
-//   }
-//   else {
-//     next();
-//   }
-// })
+// config db
+require('./config/db');
 
 // Routers
 app.use('/', indexRouter);

@@ -1,12 +1,17 @@
 var express = require('express');
 var router = express.Router();
+const passport = require('passport')
+const User = require('../models/user')
 
-// For passwd hashing
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
+const authMiddleware = (req, res, next) => {
+  if (!req.isAuthenticated()) {
+    res.status(401).send('You are not authenticated')
+  } else {
+    return next()
+  }
+}
 
 // ---------------------- router functions ----------------------- //
-
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
@@ -19,102 +24,53 @@ router.get('/helloworld', function(req, res) {
 
 /* GET Userlist page. */
 router.get('/userlist', function(req, res) {
-  var client = req.client;
-
-  // connect to usercollection
-  client.connect(err => {
-    if (err) throw err;
-    const collection = client.db("mynode").collection("usercollection");
-    
-    collection.find({}).toArray(function(e,docs){
-      if (e) throw e;
-      res.render('userlist', {
-          "userlist" : docs
-      });
+  User.find({}, (err, users) => {
+    if (err) throw err
+    res.render('userlist', {
+      "userlist" : user
     });
-    client.close();
-  });
+  })
 });
-
-
 
 /* POST to Add User Service */
 router.post('/adduser', function(req, res) {
 
-  // Set our internal client variable
-  var client = req.client;
-
   // Get our form values. These rely on the "name" attributes
-  var userName = req.body.username;
-  var userEmail = req.body.useremail;
-  var password = req.body.password;
-
-  if (!userName || !userEmail || !password) {
-    res.status(400).send('Bad request adding user');
-  }
-
-  // hash pw
-  else bcrypt.hash(password, saltRounds, (err, hashed) => {
-    if (err) {
-      throw err;
+  User.findOne({email: req.body.email}, (err, user) => {
+    if (err) throw err
+    if (user) {
+      return res.status(401).send("User exists")
     }
-    
-    var newUser = { username: userName, email: userEmail, password: hashed}
-
-    // connect to MongoDB
-    client.connect(err => {
-      if (err) throw err;
-      const collection = client.db("mynode").collection("usercollection");
-      
-      collection.insert(newUser, function(e,docs){
-        if (e) throw e;
-        res.send(newUser);
-      });
-      client.close();
-    });
-
+    var newUser = new User(req.body)
+    newUser.save(err => {
+      if (err) throw err
+      return res.send(newUser)
+    })
   })
 });
 
 /* POST to login */
-router.post('/login', function(req, res) {
-
-  // Set our internal client variable
-  var client = req.client;
-
-  // Get our form values. These rely on the "name" attributes
-  var loginUser = req.body.username;
-  var loginPW = req.body.password;
-
-  // connect to MongoDB
-  client.connect(err => {
-    if (err) throw err;
-    const collection = client.db("mynode").collection("usercollection");
-    
-    // Find user with given credentials
-    collection.findOne({username: loginUser}).then(result => {
-      // if there is such user
-      if (result) {
-        bcrypt.compare(loginPW, result.password, (err, isCorrect) => {
-          if (err) {
-            res.status(500).send('error comparing pw');
-          }
-          // if password is correct
-          if (isCorrect) {
-            res.send(result)
-          } else {
-            res.status(403).send('nope, wrong pw')
-          }
-        })
-      } else {
-        res.status(403).send("Oof no such user")
-      }
-    }).catch(err => {
-      res.status(500).send('error finding user')
-    })
-    client.close();
-  });
-
+router.post('/login', function(req, res, next) {
+  passport.authenticate('local', function(err, user, info) {
+    if (err) { return next(err); }
+    if (!user) {
+      return res.status(400).send([user, "Cannot log in", info]);
+    }
+    req.logIn(user, function(err) {
+      if (err) { return next(err); }
+      return res.send("Logged in");
+    });
+  })(req, res, next);
 });
+// GET to logout
+router.get('/logout', (req, res) => {
+  req.logout();
+  return res.send();
+})
+// GET to check user
+router.get('/user', authMiddleware,(req, res) => {
+  req.logout();
+  return res.send();
+})
 
 module.exports = router;
