@@ -27,7 +27,7 @@ router.get('/userlist', function(req, res) {
   User.find({}, (err, users) => {
     if (err) throw err
     res.render('userlist', {
-      "userlist" : user
+      "userlist" : users
     });
   })
 });
