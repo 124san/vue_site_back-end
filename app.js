@@ -20,7 +20,8 @@ app.set('view engine', 'ejs');
 app.set('trust proxy', 1)
 // ---------- Cors --------
 //app.options('*', cors({origin: 'https://sz124san.herokuapp.com'}))
-app.use(cors({origin: 'https://sz124san.herokuapp.com', credentials: true}))
+var origin = process.env.ALLOWED_ORIGIN || 'https://sz124san.herokuapp.com'
+app.use(cors({origin: origin, credentials: true}))
 
 app.use(cookieSession({
   name: 'mysession',
