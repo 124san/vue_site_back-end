@@ -19,8 +19,9 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.set('trust proxy', 1)
 // ---------- Cors --------
-//app.options('*', cors({origin: 'https://sz124san.herokuapp.com'}))
+
 var origin = process.env.ALLOWED_ORIGIN || 'https://sz124san.herokuapp.com'
+app.options('*', cors({origin: origin}))
 app.use(cors({origin: origin, credentials: true}))
 
 app.use(cookieSession({
