@@ -22,7 +22,6 @@ app.set('trust proxy', 1)
 
 var origin = process.env.ALLOWED_ORIGIN || 'https://sz124san.herokuapp.com'
 app.use(cors({origin: origin, credentials: true}))
-app.options('*', cors({origin: origin, credentials: true}))
 
 app.use(cookieSession({
   name: 'mysession',
