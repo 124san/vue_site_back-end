@@ -16,6 +16,7 @@ router.get('/:id', authMiddleware,(req, res) => {
   var id = req.params.id
   User.findById(id, (err, user) => {
     if (err) return res.status(500).send(err)
+    if (!user) return res.status(404).send("User not found")
     return res.send(user)
   })
 })
@@ -26,10 +27,11 @@ router.get('/', function(req, res, next) {
 });
 
 // PUT update a user
-router.put('/update-description/:id', function(req, res) {
+router.put('/:id', function(req, res) {
   var id = req.params.id
   User.findByIdAndUpdate(id, req.body, {new: true}, (err, user) => {
     if (err) return res.status(500).send(err)
+    if (!user) return res.status(404).send("User not found")
     return res.send(user)
   })
 });
