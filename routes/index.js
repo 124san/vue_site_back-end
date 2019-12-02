@@ -3,23 +3,10 @@ var router = express.Router();
 const passport = require('passport')
 const User = require('../models/user')
 
-const authMiddleware = (req, res, next) => {
-  if (!req.isAuthenticated()) {
-    res.status(401).send('You are not authenticated')
-  } else {
-    return next()
-  }
-}
-
 // ---------------------- router functions ----------------------- //
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
-});
-
-/* GET Hello World page. */
-router.get('/helloworld', function(req, res) {
-  res.render('helloworld', { title: 'Im gonna say the n word!' });
 });
 
 /* GET Userlist page. */
@@ -50,7 +37,6 @@ router.post('/register', function(req, res) {
     })
   })
 });
-
 /* POST to login */
 router.post('/login', function(req, res, next) {
   passport.authenticate('local', function(err, user, info) {
@@ -68,13 +54,6 @@ router.post('/login', function(req, res, next) {
 router.get('/logout', (req, res) => {
   req.logout();
   return res.send();
-})
-// GET to check user
-router.get('/user', authMiddleware,(req, res) => {
-  User.findById(req.session.passport.user, (err, user) => {
-    if (err) throw err
-    return res.send(user)
-  })
 })
 
 module.exports = router;
