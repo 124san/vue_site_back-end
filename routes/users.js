@@ -26,7 +26,7 @@ router.get('/', function(req, res, next) {
 });
 
 // PUT update a user
-router.put('/update-description/:id', authMiddleware, function(req, res) {
+router.put('/update-description/:id', function(req, res) {
   var id = req.params.id
   User.findByIdAndUpdate(id, req.body, {new: true}, (err, user) => {
     if (err) return res.status(500).send(err)
