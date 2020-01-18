@@ -4,35 +4,35 @@ const User = require('../models/user')
 const authMiddleware = require('../middlewares/auth_middleware')
 
 // GET to check current logged in user
-router.get('/current', authMiddleware,(req, res) => {
-  User.findById(req.session.passport.user, (err, user) => {
-    if (err) return res.status(500).send(err)
-    return res.send(user)
-  })
+router.get('/current', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.session.passport.user)
+    res.send(user)
+  }
+  catch (err) {
+    res.status(500).send(err)
+  }
 })
 
 // GET to check user with id
-router.get('/:id', authMiddleware,(req, res) => {
+router.get('/:id', authMiddleware, async (req, res) => {
   var id = req.params.id
-  User.findById(id, (err, user) => {
-    if (err) return res.status(500).send(err)
-    if (!user) return res.status(404).send("User not found")
-    return res.send(user)
-  })
+  const user = await User.findById(id)
+  if (!user) return res.status(404).send("User not found")
+  res.send(user)
 })
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+router.get('/', authMiddleware, async (req, res, next) => {
+  const users = await User.find();
+  res.send(users)
 });
 
 // PUT update a user
-router.put('/:id', function(req, res) {
+router.put('/:id', async (req, res) => {
   var id = req.params.id
-  User.findByIdAndUpdate(id, req.body, {new: true}, (err, user) => {
-    if (err) return res.status(500).send(err)
-    if (!user) return res.status(404).send("User not found")
-    return res.send(user)
-  })
+  const user = await User.findByIdAndUpdate(id, req.body, {new: true});
+  if (!user) return res.status(404).send("User not found")
+  res.send(user)
 });
 module.exports = router;

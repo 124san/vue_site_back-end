@@ -10,33 +10,27 @@ router.get('/', function(req, res, next) {
 });
 
 /* GET Userlist page. */
-router.get('/userlist', function(req, res) {
-  User.find({}, (err, users) => {
-    if (err) throw err
-    res.render('userlist', {
-      "userlist" : users
-    });
-  })
-});
+router.get('/userlist', async (req, res) => {
+  const users = await User.find();
+  res.render('userlist', {
+    "userlist" : users
+  });
+})
 
 /* POST to register */
-router.post('/register', function(req, res) {
-
+router.post('/register', async (req, res) => {
   // Get our form values. These rely on the "name" attributes
-  User.findOne({email: req.body.email}, (err, user) => {
-    if (err) throw err
-    if (user) {
-      return res.status(401).send("User exists")
-    }
-    var newUser = new User(req.body)
-    newUser.save(err => {
-      if (err) throw err
-      passport.authenticate('local')(req, res, function () {
-        res.send("registered")
-      });
-    })
-  })
+  const user = await User.findOne({email: req.body.email})
+  if (user) {
+    return res.status(401).send("User exists")
+  }
+  var newUser = new User(req.body)
+  await newUser.save()
+  passport.authenticate('local')(req, res, function () {
+    res.send("registered")
+  });
 });
+
 /* POST to login */
 router.post('/login', function(req, res, next) {
   passport.authenticate('local', function(err, user, info) {
@@ -50,6 +44,7 @@ router.post('/login', function(req, res, next) {
     });
   })(req, res, next);
 });
+
 // GET to logout
 router.get('/logout', (req, res) => {
   req.logout();
