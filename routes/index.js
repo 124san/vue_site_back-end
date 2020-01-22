@@ -33,7 +33,6 @@ router.post('/register', async (req, res) => {
 
 /* POST to login */
 router.post('/login', function(req, res, next) {
-  console.log(req.cookies)
   passport.authenticate('local', function(err, user, info) {
     if (err) { return next(err); }
     if (!user) {

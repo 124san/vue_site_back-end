@@ -6,6 +6,7 @@ const authMiddleware = require('../middlewares/auth_middleware')
 // GET to check current logged in user
 router.get('/current', authMiddleware, async (req, res) => {
   try {
+    console.log(req.cookies)
     const user = await User.findById(req.session.passport.user)
     res.send(user)
   }
