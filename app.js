@@ -27,7 +27,7 @@ app.use(cookieSession({
   name: 'mysession',
   keys: [process.env.SESSION_KEY || 'akey'],
   httpOnly: true,
-  secure: false,
+  secure: true,
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }))
 // ---------------------- Passport ---------------------
