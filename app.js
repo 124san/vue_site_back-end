@@ -23,14 +23,14 @@ app.set('trust proxy', 1)
 var origin = process.env.ALLOWED_ORIGIN || 'http://localhost:8080'
 app.use(cors({origin: origin, credentials: true}))
 
-// app.use(cookieSession({
-//   name: 'mysession',
-//   keys: [process.env.SESSION_KEY || 'akey'],
-//   httpOnly: true,
-//   secure: true,
-//   sameSite: "lax",
-//   maxAge: 24 * 60 * 60 * 1000 // 24 hours
-// }))
+app.use(cookieSession({
+  name: 'mysession',
+  keys: [process.env.SESSION_KEY || 'akey'],
+  httpOnly: true,
+  secure: true,
+  sameSite: 'none',
+  maxAge: 60 * 1000 // 24 hours
+}))
 // ---------------------- Passport ---------------------
 app.use(passport.initialize());
 app.use(passport.session());
