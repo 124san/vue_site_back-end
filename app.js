@@ -29,7 +29,7 @@ app.use(cookieSession({
   httpOnly: true,
   secure: true,
  // sameSite: 'none',
-  maxAge: 60 * 1000 // 24 hours
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }))
 // ---------------------- Passport ---------------------
 app.use(passport.initialize());
